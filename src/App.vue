@@ -19,7 +19,7 @@ import storage from './storage/index'
     mounted(){
       //storage.setItem('a',1);
       //storage.setItem('user',{a:1})
-      //storage.setItem('abc',{a:1},'user')
+      //storage.setItem('abc',{a:1},'user')s
       storage.clear('a','user')
      
     }
