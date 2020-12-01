@@ -12,6 +12,7 @@
     "core-js": "^3.6.5",
     "element-ui": "^2.14.1",
     "node-sass": "^5.0.0",
+    "swiper": "^6.3.5",
     "vue": "^2.6.11",
     "vue-awesome-swiper": "^4.1.1",
     "vue-axios": "^3.2.0",
