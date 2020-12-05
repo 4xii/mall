@@ -12,7 +12,7 @@
             <a href="javascript:;" v-if="username">{{username}}</a>
             <a href="javascript:;" v-if="!username" @click="login">登录</a>
             <a href="javascript:;" v-if="username">我的订单</a>
-            <a href="javascript:;" class="my-cart" @click="goToCart"><span class="icon-cart"></span>购物车</a>
+            <a href="javascript:;" class="my-cart" @click="goToCart"><span class="icon-cart"></span>购物车{{cartCount}}</a>
           </div>
         </div>
 
@@ -122,42 +122,51 @@
 </template>
 
 <script>
-    export default{
-        name:'nav-header',
-        data(){
-          return {
-            username:'',
-            phoneList:[]
-          }
-        },
-        filters:{
-          currency(val){
-            if(!val)return '0.00';
-            return '￥' + val.toFixed(2) + '元';
-          }
-        },
-        mounted(){
-          this.getProductList();
-        },
-        methods:{
-          login(){
-            this.$router.push('/login')
-          },
-          getProductList(){
-            this.axios.get('/products',{
-              params:{
-                categoryId:'100012',
-                pageSize:6
-              }
-            }).then((res)=>{             
-                this.phoneList = res.list;
-            })
-          },
-          goToCart(){
-            this.$router.push('/cart');
-          }
+import {mapState} from 'vuex';
+  export default{
+      name:'nav-header',
+      data(){
+        return {
+          phoneList:[]
         }
-    }
+      },
+      computed:{
+        /* username(){
+          return this.$store.state.username;
+        },
+        cartCount(){
+          return this.$store.state.cartCount;
+        }, */
+        ...mapState(['username','cartCount'])
+      },
+      filters:{
+        currency(val){
+          if(!val)return '0.00';
+          return '￥' + val.toFixed(2) + '元';
+        }
+      },
+      mounted(){
+        this.getProductList();
+      },
+      methods:{
+        login(){
+          this.$router.push('/login')
+        },
+        getProductList(){
+          this.axios.get('/products',{
+            params:{
+              categoryId:'100012',
+              pageSize:6
+            }
+          }).then((res)=>{             
+              this.phoneList = res.list;
+          })
+        },
+        goToCart(){
+          this.$router.push('/cart');
+        }
+      }
+  }
 
 </script>
 
