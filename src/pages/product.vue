@@ -52,13 +52,13 @@
   </div>
 </template>
 <script>
-  import { swiper, swiperSlide } from 'vue-awesome-swiper'
+  import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
   import ProductParam from './../components/ProductParam'
   export default{
     name:'product',
     components:{
-      swiper,
-      swiperSlide,
+      Swiper,
+      SwiperSlide,
       ProductParam
     },
     data(){
