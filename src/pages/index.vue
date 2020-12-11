@@ -125,7 +125,7 @@ import 'swiper/css/swiper.css'
 					swiperOption:{
 						autoplay:true,
 						loop:true,
-						effect:'cube',
+						effect:'coverflow',
 						cubeEffect: {
 							shadowOffset: 100,
 							shadowScale: 0.6
