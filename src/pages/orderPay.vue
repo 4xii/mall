@@ -50,9 +50,12 @@
         </div>
       </div>
     </div>
+    <scan-pay-code v-if="showPay" @close="closePayModal" :img="payImg"></scan-pay-code>
   </div>
 </template>
 <script>
+import QRCode from 'qrcode'
+import ScanPayCode from './../components/ScanPayCode'
 export default{
   name:'order-pay',
   data(){
@@ -62,7 +65,12 @@ export default{
         orderDetail:[],//订单详情，包含了商品列表
         showDetail:false,//是否展示订单详情
         payType:'',//支付类型
+        showPay:false,//是否显示微信支付弹框
+        payImg:'',//微信支付的二维码地址
 			}
+  },
+  components:{
+    ScanPayCode
   },
   mounted(){
 		this.getOrderDetail();
@@ -78,7 +86,27 @@ export default{
     paySubmit(payType){
       if(payType == 1){
         window.open('/#/order/alipay?orderId='+this.orderId,'_blank');
+      }else{
+        this.axios.post('/pay',{
+          orderId:this.orderId,
+          orderName:'Vue高仿小米商城',
+          amount:0.01,//单位元
+          payType:2//1.支付宝 2.微信
+        }).then((res)=>{
+          QRCode.toDataURL(res.content)
+          .then(url => {
+            this.showPay = true;
+            this.payImg = url
+          })
+          .catch(() => {
+            this.$message.error('微信二维码生成失败，请稍后重试')
+          })
+        })
       }
+    },
+    //关闭微信弹窗
+    closePayModal(){
+      this.showPay = false;
     }
   }  
 }
