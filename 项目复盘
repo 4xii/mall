@@ -1,0 +1,215 @@
+1-1 项目导读{
+  商城页面流程
+    登录》产品首页》产品站》产品详情》购物车》订单确认》订单支付(微信/支付宝)》订单列表
+  业务开发流程
+    需求整理》UI设计》接口规范对接》搭建前端架构开发电商页面》微信/支付宝对接》线上部署
+
+  项目技术:
+    商城内容{
+      页面{
+        商城首页
+        登录
+        商城产品站
+        商城详情
+        购物车
+        订单确认
+        订单支付(微信/支付宝)
+        订单列表
+      }
+      组件系统{
+        NavHeader(导航组件)
+        NavFooter(底部组件)
+        ServiceBar(服务条组件)
+        ProductParam(产品参数组件)
+        OrderHeader(订单头部组件)
+        Loading(加载组件)
+        Modal(弹框组件)
+        NoData(无数据组件)
+        ScanPayCode(支付组件)
+      }
+    }
+
+    商品技术栈(核心技术){
+      基础知识{
+        Git命令详细讲解
+        Node环境
+        VueCli4.0
+        DevTools
+      }
+      动画{
+        Vue-Transition
+        C3-Transition
+        C3-Animation
+      }
+      框架{
+        Vue
+        VueRouter
+        Vuex
+        Axios
+        ElementUI
+        Scss/Mixin
+      }
+      项目架构{
+        三种跨域方案
+        目录结构规范
+        常用插件介绍
+        Router封装
+        Storage封装
+        接口错误拦截
+        接口环境设置
+        Mock设置
+      }
+      其他知识{
+        开发调试技巧
+        本地接口代理
+        生成支付二维码
+        图片懒加载
+        SSH公钥配置
+        Nginx配置
+        项目部署
+      }
+    }}
+
+1-2 Node环境{
+  查询Node版本    node -v}
+
+2-1 Git安装{
+  查找Git which -a git 
+  查看Git版本  git -version}
+
+2-2 Git配置{
+  vscode 首选项》设置》setting.json 》"git.path":"/usr/local/bin/git
+  查看配置  git config --list        全局配置--global
+          git configg --global user.name "jackbean"
+          git config --global user.email "jackbean@51puise.com"
+  信任账号凭证 git config --global credential.helper Store
+  配置公钥 ssh-keygen -t rsa -C "youremail@example.com"
+  克隆项目 git clone
+
+  git常用命令 master：默认开发分支  Head:默认开发分支 origin：默认远程版本库 Head^：Head的父提交
+    创建版本库
+    {
+      克隆远程版本库 git clone <url>
+      初始化本地版本库 git init
+    }
+    提交和修改
+    {
+      查看状态 git status
+      查看改变内容 git diff
+      跟踪所以改动过的文件 git add .
+      跟踪指定的文件 git add <file>
+      文件改名 git mv <old> <new>
+      删除文件 git rm <file>
+      停止跟踪文件但不删除 git rm --cached <file>
+      提交所有更新过的文件 git commit -m "commit message"
+      修改最后一次提交 git commit --amend 
+    }
+    分支与标签
+    {
+      显示所有的本地分支 git branch
+      切换到指定分支或标签 git checkout <branch/tag>
+      创建新分支 git branch <new branch>
+      删除本地分支 git branch -d <branch>
+      列出所有本地标签 git tag
+      基于最新提交创建标签 git tag <tagname>
+      产出标签 git tag -d <tagname>
+    }
+    合并与衍合
+    {
+      git merge <branch>
+      git rebase <branch>
+    }
+    查看提交历史
+    {
+      查看提交历史 git log
+      查看指定文件的提交历史 git log -p <file>
+      以列表方式查看指定文件的提交历史 git blame <file>
+    }
+    撤销
+    {
+      撤销工作目录中所有未提交文件的修改内容 git reset --hard HEAD
+      撤销指定的未修改文件的修改内容 git checkout HEAD <file>
+      撤销指定的内容 git revert <commit>
+    }
+    远程操作
+    {
+      查看远程版本库信息 git remot -v
+      查看指定远程版本库信息 git remote show <remote>
+      添加远程版本库 git remote add <remote> <url>
+      从远程库获取代码 git fetch <remote>
+      下载代码及快速合并 git pull <remote> <branch>
+      上传代码及快速合并 git push <remote> <branch>
+      删除远程分支或标签 git push <remote> : <branch/tag-name>
+      上传所有标签 git push --tags
+    }}
+
+3-1 VueCli4{
+  自动集成webpack 打包 编译 基本架构(非业务架构)
+  npm i -g @Vue/cli}
+
+3-2 VueClie4.0使用{
+  创建 vue creater mall
+  界面UI功能(内置可视化) vue ui
+  安装依赖 axios vue-router vue-x}
+
+前端跨域
+    跨域是浏览器为了安全而做出的限制策略
+    浏览器请求必须遵循同源策略：同域名、同端口、同协议
+
+4-1 跨域-CORS{
+  CORS跨域 - 服务端设置，前端直接调用
+  说明: 后台允许前端某个站点进行访问
+  axios是pormise结构，用then链式调用}
+
+4-2 跨域-JSONP{
+  安装JSONP插件 npm i jsonp --save-del
+  JS脚本不是XHR请求
+  jsonp(url,(err,res)=>{
+
+  })}
+
+4-3跨域-接口代理{
+  接口代理 - 通过修改nginx服务器配置来实现
+  说明：前端修改，后台不动
+  创建vue.config.js
+  proxy:{
+      '/api':{
+        target:'http://mall-pre.springboot.cn',
+        changeOrigin:true,
+        pathRewrite:{
+          '/api':''
+        }
+      }
+  }}
+
+4-4需求梳理{
+  熟悉文档、查看原型、读懂需求
+  了解前端设计稿 - 设计前端业务架构
+  了解后台接口文档 - 指定相关对接规范
+  协调资源
+  搭建前端框架}
+
+4-6基本插件{
+  vue-lazyload 
+  element-ui
+  node-sass
+  sass-loader
+  vue-awesome-swiper
+  vue-axios
+  vue-cookie 前后端交互 用cookie传递}
+
+4-7路由封装{
+  Vue.use()加载插件固定语法
+    将NavHeader和NavFooter封到Home中
+    将index product detail划分为home的子路由
+    将orderList orderConfirm orderPay alipay划分为order的子路由}
+
+4-8 Storage封装{
+  Cookie,localStorage,sessionStorage
+  区别:  
+         储存大小：Cookie4k,Storage5M
+         有效期: Cookie拥有有效期，Stroage永久储存
+         Cookie会发送到服务端，储存在内存中，Storage只储存在浏览器端
+         路径:Cookie有路径限制，Storage只储存在域名下
+         API：Cookie没有特定的API,Storage有对应的API
+}
