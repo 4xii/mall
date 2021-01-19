@@ -212,4 +212,140 @@
          Cookie会发送到服务端，储存在内存中，Storage只储存在浏览器端
          路径:Cookie有路径限制，Storage只储存在域名下
          API：Cookie没有特定的API,Storage有对应的API
+
+  为什么封装Storage
+    Storage本身有API，但是只是简单的key/value形式
+    Storage只存储字符串，需要收工转换成json对象
+    Storage只能一次性清空，不能单个清空
+  export default {
+  //存储值
+  setItem(key,value,module_name){
+    if(module_name){
+      let val = this.getItem(module_name);
+      val[key] = value;
+      this.setItem(module_name,val);
+
+    }else{
+      let val = this.getStorage();
+      val[key] = value;
+      window.sessionStorage.setItem(STORAGE_KEY,JSON.stringify(val));
+
+    }
+    
+  },
+  //获取某一个模块下面的属性user下面的userName
+  getItem(key,module_name){
+    if(module_name){
+      let val = this.getItem(module_name);
+      if(val) return val[key];
+    }
+    return this.getStorage()[key];
+  },
+  getStorage(){
+    return JSON.parse(window.sessionStorage.getItem(STORAGE_KEY) || '{}');
+  },
+  clear(key,module_name){
+    let val = this.getStorage();
+    if(module_name){
+      if(!val[module_name]) return
+      delete val[module_name][key];
+    }else{
+      delete val[key];
+    }
+    window.sessionStorage.setItem(STORAGE_KEY,JSON.stringify(val));
+  }
+
+4-9 接口错误拦截{
+  统一报错
+  未登录统一拦截
+  请求值，返回值统一处理
+  axios
+  get请求：
+    axios.get('/user',{
+      params:{
+        ID:12345
+      }
+    })
+  post请求
+    axios.post('/user',{
+      firstName:'Fred',
+      lastName:'Flintstone'
+    })}
+
+4-10接口环境设置{
+  开发上线的不同阶段，需要不同的配置
+  不同的跨域方式，配置不同
+  打包的时候统一注入环境参数，统一管理环境，输出不同的版本包
+
+  "serve": "vue-cli-service serve --mode=development",//开发环境
+  "test": "vue-cli-service serve --mode=test",
+  "build": "vue-cli-service build --mode=production",//生产环境
+
+  switch(process.env.NODE_ENV){
+  case 'development':
+    baseURL = 'http://dev-mall-pre.springboot.cn/api';
+    break;
+  case 'test':
+    baseURL = 'http://test-mall-pre.springboot.cn/api';
+    break;
+  case 'prod':
+    baseURL = 'http://mall-pre.springboot.cn/api'
+    break;
+  default:
+    baseURL = 'http://mall-pre.springboot.cn/api'
+    break;}
+
+4-11 Mock设置{
+  开发阶段，为了提高效率，需要提前Mock
+  减少代码冗余，灵活插拔
+  减少沟通，减少接口联调时间
+  
+  三种方法
+    本地创建json
+    easy-mock平台
+    集成Mock API  
+
+    本地加载请求静态json的形式
+    this.axios.get('/mock/user/login.json').then((res)=>{
+        this.res = res;
+    })
+
+    通过Easy Mock
+    将baseURL地址改为EasyMock生产的地址
+    axios.defaults.baseURL = ' https://www.easy-mock.com/mock/5fbe0b3d1bc0682deacbfea7/mimall';
+    this.axios.get('/user/login').then((res)=>{
+        this.res = res;
+    })
+
+    本地集成mockjs实现数据mock
+    npm i mockjs --save-dev
+    const mock = true;//定义开关
+    if(mock){
+      require('./mock/api')//import是预编译加载 require执行的时候才会加载
+    }}
+
+5-1 Nav-Header组件{
+  购物车背景图片css设置:background:url('/imgs/icon-cart-checked.png') no-repeat center
+                    background-size:contain 要记得给图标span设宽度哟
+  cantainer公共部分抽取至sass
+  logo：
+   a{
+    display:inline-block;
+    width: 110px;
+    height: 55px;
+    &:before{
+      content: '';
+      @include bgImg(55px,55px,'/imgs/mi-logo.png',55px);
+      transition:margin .2s;
+    }
+    &:after{
+      content: '';
+      @include bgImg(55px,55px,'/imgs/mi-home.png',55px);
+      display: inline-block;
+    }
+    &:hover::before{
+      margin-left: -55px;
+      transition:margin .2s;
+    }
+  }
 }
