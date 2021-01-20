@@ -328,7 +328,24 @@
   购物车背景图片css设置:background:url('/imgs/icon-cart-checked.png') no-repeat center
                     background-size:contain 要记得给图标span设宽度哟
   cantainer公共部分抽取至sass
+  align-item:center;//垂直方向居中
+  cursor:pointer//鼠标移上去带小手
+  box-shadow://添加阴影
+  font-weight:bold;//加粗
+  opacity：0//透明
+  &:last-child:before{
+    display:none;//最后一个元素不要
+  }
   logo：
+  //sass部分
+  @mixin bgImg($w:0,$h:0,$img:'',$size:contain){
+    display:inline-block;
+    width:$w;
+    height:$h;
+    background:url($img) no-repeat center;
+    background-size:$size;
+  }
+  
    a{
     display:inline-block;
     width: 110px;
@@ -348,4 +365,15 @@
       transition:margin .2s;
     }
   }
+
+  //flex布局复用
+  @mixin flex($hov:space-between,$col:center){
+    display:flex;
+    justify-content:$hov;
+    align-items:$col;
+  }
+
+
+  移到每个部分展示下拉属性
+  默认高度 height:0； opacity:0; hover:opacity:1; overflow:hidden隐藏 然后添transition过度
 }
