@@ -376,4 +376,140 @@
 
   移到每个部分展示下拉属性
   默认高度 height:0； opacity:0; hover:opacity:1; overflow:hidden隐藏 然后添transition过度
+
+  交互：
+  data(){
+    return{}//不要定义全局data
+  }
+
+  mounted(){
+    this.getProductList();
+  }//初始化调用方法
+
+  methods:{
+    getProductList(){
+      this.axios.get('/product',{
+        params:{
+          //get请求params
+          categoryId:'10012'
+        }
+      }).then((res)={
+        if(res.list.length >= 6){
+          this.phoneList = res.list.slice(0,6)        
+        }
+      })
+    }
+  }
+
+  :key 渲染速度更快，复用率更高 再次渲染会缓存 提高性能
+  v-bind:href="'/#/product/'+item.id"
+  
+  //过滤器
+  filters:{
+    currency(val){
+      if(!val)return '0.00';
+      return '￥' + val.toFixed(2) + '元';
+    }
+  }
+  使用:<div class="pro-price">{{item.price | currency}}</div>
+
+  //@click=’goToCart'
+  goToCart(){
+    this.$router.push('/cart'); 路由跳转为router.push
+  }}
+
+5-6 Nav-Footer组件{
+  template下面需要一个大div包裹}
+
+5-7 Service-Bar{
+  scope局部
+  添加父级样式防止复用
+  vertical-align:middle;该属性定义行内元素的基线相对于该元素所在行的基线的垂直对齐}
+
+5-8 首页轮播功能{
+  swiper5
+  import 'VueAwesomeSwiper from 'vue-awesome-swiper'//全局
+  
+  es6解构
+  import { swiper.swiperSlide} from 'vue-awesome-swiper'
+  import ‘swiper/dist/css/swiper.css'
+
+  <swiper v-bind:options="swiperOption">
+    <swiper-slide v-for="(item,index) in slideList" :key="index">
+      <a :href="'/#/product/'+item.id"><img :src="item.img"></a>
+    </swiper-slide>
+    <div class="swiper-pagination" slot="pagination"></div>
+    <div class="swiper-button-prev" slot="button-prev"></div>
+    <div class="swiper-button-next" slot="button-next"></div>
+  </swiper>
+  data () {
+    return {  
+      swiperOption:{
+        autoplay:true,//自动播放
+        loop:true,//循环播放
+        effect:'coverflow',//切换效果
+        cubeEffect: {
+          shadowOffset: 100,
+          shadowScale: 0.6
+        },
+        pagination:{
+          el:'.swiper-pagination',
+          clickable:true
+        },
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+    }
+  }}
+
+5-9首页轮播菜单{
+  box-sizing:border-box 包括padding
+  图片透明度可通过chrome调整找出颜色
+  &:hover{
+    background-color:$colorA;
+  }
+
+  menuList:[
+    [
+      {
+        id:30,
+        img:'/imgs/item-box-1.png',
+        name:'小米CC9',
+        
+      },
+      {
+        id:31,
+        img:'/imgs/item-box-2.png',
+        name:'小米8青春版'
+      },
+      {
+        id:32,
+        img:'/imgs/item-box-3.jpg',
+        name:'Redmi K20 Pro'
+      },
+      {
+        id:33,
+        img:'/imgs/item-box-4.jpg',
+        name:'移动4G+专区'
+      },
+    ],
+    [0,0,0,0],
+    [0,0,0,0],
+    [0,0,0,0],
+    [0,0,0,0],
+    [0,0,0,0],
+  ]
+
+  <ul v-for="(item,i) in menuList" :key="i">
+    <li v-for="(sub,j) in item" :key="j">
+      <a :href="sub? '/#/product/'+ sub.id:'' ">
+        <img :src="sub? sub.img: '/imgs/item-box-1.png'" alt="">
+        {{sub?sub.name:'小米9'}}
+      </a>
+    </li>
+  </ul>}
+
+5-12手机商品实现{
+
 }
