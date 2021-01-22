@@ -635,5 +635,4 @@
   }
 
   获取地址
-  let path = location.hash
-}
+  let path = location.hash}
