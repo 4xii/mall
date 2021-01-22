@@ -511,5 +511,129 @@
   </ul>}
 
 5-12手机商品实现{
+  css控制最后一个元素
+  margin-bottom:14px;
+  &:last-child{
+    margin-bottom:0;
+  }
 
+  &.new-pro{
+    background-color: #7ECF68;
+  }
+  &.kill-pro{
+    background-color: #E82626;
+  }
+
+  init(){
+    this.axios.get('/products',{
+      params:{
+        categoryId:100012,
+        pageSize:14
+      }
+    }).then((res)=>{
+      res.list = res.list.slice(6,14);
+      this.phoneList = [res.list.slice(0,4),res.list.slice(4,8)];
+    })
+  }}
+
+5-14Modal组件{
+  <slot></slot>插槽
+
+
+  <modal 
+    title="提示"
+    suerText="查看购物车" 
+    btnType="1" 
+    modalType="middle" 
+    :showModal="showModal"
+    v-on:submit="goToCart"
+    v-on:cancel="showModal=false"
+    >
+    <template v-slot:body>
+      <p>商品添加成功</p>
+    </template>	
+  </modal>
+
+  //放大
+  &:hover{
+    transform:scale(1.5);
+  }
+
+  使用<transition></transition>嵌套
+
+  transition:all .5s;
+
+  &.slide-enter{
+    top:-100%
+  }
+  &.slide-enter-active{
+    top:0;
+  }
+  &.slide-leave-active{
+    top:-100%
+  }
+
+
+  <a href="javascript:;" class="btn" v-if="btnType==1" @click="$emit('submit')">{{sureText}}</a>
+  <a href="javascript:;" class="btn" v-if="btnType==2" @click="$emit('cancel')">{{cancelText}}</a> 
+  叉叉图标上也需要绑定@click="$emit('cancel')"
+
+  父组件接受自定义事件v-on:submit="goToCart" v-on:cancel="showModal=false"}
+
+5-18图片懒加载{
+  性能优化：提高首屏加载速度 提升用户体验 减小带宽 避免首次加载一堆图片
+  vue-lazyload
+  Vue.use(VueLazyLoad,{
+    loading:'/imgs/loading-svg/loading-bars.svg'
+  })
+  将v-bind:src=“xxx" 换成v-lazy=”xxx" 图片地址加进去要换单引号哟
+
+  一开始不给src赋值，当图片滚动出来再给src赋值加载}
+
+6-1登录{
+  单页面数据存在内存中，页面刷新数据消失,使用vuex
+  保存用户id：userId:''
+  为账号密码两个input框绑定v-module 为登录v-on绑定login方法
+  login(){
+    let {username,password} = this;
+    this.axios.post('/user/login',{
+      username,
+      password
+    }).then((res)=>{
+      this.$cookie.set('userId',res.id,{expires:'Session'});
+      //this.$store.dispatch('saveUserName',res.username);
+      this.saveUserName(res.username);
+      this.$router.push({
+        name:'index',
+        params:{
+          from:'login'
+        }
+      });
+    })
+  }
+
+  vue-cookie
+  Vue.use(vueCookie)
+  this.$cookie.set('userId',res.id,{expires:'Session'});
+
+  在入口App.vue获取用户信息和商品数量
+  getUser(){
+    this.axios.get('/user').then((res={})=>{
+      this.$store.dispatch('saveUserName',res.username);
+    })
+  },
+  getCartCount(){
+    this.axios.get('/carts/products/sum').then((res=0)=>{
+      this.$store.dispatch('saveCartCount',res);
+    })
+  }
+
+  在mounted中
+  if(this.$cookie.get('userId')){
+    this.getUser();
+    this.getCartCount();
+  }
+
+  获取地址
+  let path = location.hash
 }
