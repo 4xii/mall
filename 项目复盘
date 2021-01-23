@@ -632,7 +632,182 @@
   if(this.$cookie.get('userId')){
     this.getUser();
     this.getCartCount();
-  }
-
+  }}
   获取地址
   let path = location.hash}
+
+7-1vuex{
+  为前端解决组件之间数据传输和数据共享
+  组件之间是单向流通
+  将数据保存在vuex中来共享数据
+
+  视图中的行为需要通过Dispath触发Action 通过Commit提交数据Mutations并存储
+  Mutations会自动通过Mutate提交状态到State状态中，状态会通过Render渲染视图
+  当状态有延迟需要使用computed
+
+  使用Vue.use使用的插件都会被挂载至Vue实例上，可以通过this获取
+
+  getter是对数据进行过滤以及业务处理
+
+  store
+  ├── index.js          # 我们组装模块并导出 store 的地方
+  ├── actions.js        # 根级别的 action
+  ├── mutations.js      # 根级别的 mutation
+  └── modules
+      ├── cart.js       # 购物车模块
+      └── products.js   # 产品模块
+
+  创建store封装vuex
+  main.js使用store
+
+  action封装
+  export default {
+    saveUserName(context,username){
+      context.commit('saveUserName',username);
+    },
+    saveCartCount(context,count){
+      context.commit('saveCartCount',count);
+    }
+  }
+
+  dispatch派发action
+  this.$store.dispatch()
+
+  接口调用需要时间，先读取变量却没有返回值，从而产生误差，所以使用computed计算属性
+
+  import {mapActions} from 'vuex'
+  ...mapActions(['saveUserName']) 
+    this.saveUserName(res.username);
+  等于this.$store.dispatch('saveUserName',res.username);}}
+
+8-1产品站参数组件实现{
+  product中的插槽内容
+  <product-param v-bind:title="product.name">
+    <template v-slot:buy>
+      <button class="btn" @click="buy">立即购买</button>
+    </template>
+  </product-param>}
+
+8-2组件吸顶{
+  data(){
+      return {
+        isFixed:false
+      }
+    },
+    mounted(){
+      window.addEventListener('scroll',this.initHeight)
+    },
+    methods:{
+      initHeight(){
+        let scrollTop = window.pageYoffset || document.documentElement.scrollTop || document.body.scrollTop;
+        this.isFixed =  scrollTop > 152? true:false;
+      }
+    }
+
+  然后再ProduceParam上给class用v-bind动态绑定is_fixed
+  <div class="nav-bar" :class="{'is_fixed':isFixed}">
+
+  CSS中：
+  &.is_fixed{
+    position:fixed;
+    top:0;
+    width: 100%;
+    box-shadow:0 5px 5px $colorE;
+  }
+
+  在页面销毁时去掉事件，防止其他页面滚动的时候该事件还在加载。他还在计算哟
+  销毁：生命周期destroyed(){
+    window.removeEventListener('scroll',this.initHeight,false)//true为捕获,false为冒泡
+  }}
+
+8-3视频模块{
+  overlay视频遮罩
+  controls视频控件
+  muted静音播出
+  video标签<video src="" muted autoplay controls="controls"></video>
+
+  object-fit:cover;视频内容覆盖整个窗口
+
+  居中
+  top:-50%;
+  left:50%;
+  transform:translate(-50%,-50%);}
+
+8-4 Slide动画{
+  transition过度 单个属性单一的过度动画
+  animations动画  比较复杂的过渡效果
+  
+  transition
+  在video-bg给showSlide 设置true
+  在icon-close给showSlide设置false
+
+  transition:all .6s
+  对video使用v-bind绑定class而不是使用v-if
+  <div class="video" v-bind:class="{‘slide’：showSlide}">
+
+  animations
+  定义动画
+  @keyframes slideDown{
+    from{
+      top:-50%;
+      opacity:0;
+    }
+    to{
+      top:50%;
+      opacity:1;
+    }
+  }
+  @keyframes slideUp{
+    from{
+      top:50%;
+      opacity:1;
+    }
+    to{
+      top:-50%;
+      opacity:0;
+    }
+  }
+
+  为.video添加 linear匀速
+  &.slideDown{
+    animation:slideDown .6s linear;
+    top:50%;//使他播放完动画停留在50%
+  }
+  &.slideUp{
+    animation:slideUp .6s linear;
+  }
+
+  <div class="video-bg" @click="showSlide='slideDown'"></div>
+    <div class="video-box">
+      <div class="overlay" @click="showSlide='slideUp'" v-if="showSlide=='slideDown'"></div>
+      <div class="video" v-bind:class="showSlide">
+        <span class="icon-close" @click="showSlide='slideUp'"></span>
+
+8-6产品站交互{
+  获取参数
+  let id = this.$route.params.id;
+  $route获取参数 $router跳转
+  使用参数拼接再来调用信息
+
+  vue中只要对象发生变化会自动触发setter 自动渲染视图
+
+  getProductInfo(){
+    let id = this.$route.params.id;
+    this.axios.get(`/products/${id}`).then((res)=>{
+      this.product = res;
+    })
+  },
+  buy(){
+    let id = this.$route.params.id;
+    this.$router.push(`/detail/${id}`);
+  }
+  //修改BUG
+  <div class="video-bg" @click="showSlide='slideDown'"></div>
+  <div class="video-box" v-show="showSlide">
+    <div class="overlay" @click="closeVideo" v-if="closeVideo"></div>
+    <div class="video" v-bind:class="showSlide">
+      <span class="icon-close" @click="closeVideo"></span>
+      <video src="/imgs/product/video.mp4" muted autoplay controls="controls"></video>
+    </div>
+  </div>
+}
