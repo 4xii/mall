@@ -809,5 +809,115 @@
       <span class="icon-close" @click="closeVideo"></span>
       <video src="/imgs/product/video.mp4" muted autoplay controls="controls"></video>
     </div>
+  </div>}
+
+9-1商品详情交互{
+  定义两个通用浮动样式fl fr
+  .fl{
+  float:left;
+  }
+  .fr{
+    float:right;
+  }
+
+  清除浮动
+  .clearfix:before,.clearfix:after{
+    content: '';
+    display: table;
+  }
+  .clearfix:after{
+    clear: both;
+  }
+
+  有些时候父盒子无法添加高度
+  子盒子浮动后，导致父标签高度塌陷
+  由于浮动元素不再占用原文档流的位置，所以它会对后面的元素排版产生影响
+  本质就是清楚浮动元素所造成的影响，如果父盒子本身有高度则无需清除浮动
+
+  清楚浮动后，父级就会根据浮动的子盒子自动检测高度，父级有了高度，则不会影响下面标准流
+  clear:both
+  策略:闭合浮动
+
+  方法：
+  1.额外标签法，(隔墙法) W3C推荐 在最后一个浮动的子元素后面添加一个额外标签添加清除浮动样式
+  在浮动元素末尾添加一个空的标签<div style="clear:both"></div>//必须是块级块级块级元素
+
+    清除浮动的本质是清除浮动元素脱离标准流造成的影响
+    策略是闭合浮动，只让浮动在盒子内部影响，不影响父盒子外面的其他盒子
+    缺点:结构较差
+
+  2.父级添加overflow
+  无法显示溢出部分
+
+
+  3.父级添加after伪元素 是额外标签法的升级版
+    .clearfix:after{
+      content:"",
+      display:block;
+      height:0;
+      clear:both;
+      visibility:hidden
+    }
+    .clearfix{
+      /* IE6、7*/
+      *zoom:1;
+    }
+    没有添加标签，结构简单
+    但是需要照顾低版本浏览器 IE67不兼容:after
+
+  4.父级添加双伪元素
+    .clearfix:before,.clearfix:after{
+      content:"",
+      display:table;
+    }
+    .clearfix:after{
+      clear:both;
+    }
+    .clearfix{
+      *zoom:1;
+    }
+    代码更加简洁
+
+    version:1,//商品版本切换
+    <div class="phone fl" :class="{'checked':version==1}" @click="version=1">6GB+64GB 全网通</div>
+    <div class="phone fr" :class="{'checked':version==2}" @click="version=2">4GB+64GB 移动4G</div>
+
+    <div class="fl">{{product.name}} {{version==1?'6GB+64GB 全网通':'4GB+64GB 移动4G'}} 深灰色</div>
+
+    购物车添加
+    addCart(){
+      this.axios.post('/carts',{
+        productId:this.id,
+        selected: true
+      }).then((res={cartProductVoList:0})=>{
+        this.$store.dispatch('saveCartCount',res.cartTotalQuantity);
+        this.$router.push('/cart');
+      });
+    }
+
+    index中购物车添加
+    addCart(id){				
+      this.axios.post('/carts',{
+        productId:id,
+        selected:true
+      }).then((res)=>{
+        this.showModal = true;
+        this.$store.dispatch('saveCartCount',res.cartTotalQuantity);
+      }).catch(()=>{
+        this.showModal = true;
+      })
+    }	
+}
+
+10-1 Order-Header组件{
+  style中的scoped可以作用于子作用域 但是会生产很多无用的标签
+
+  <div class="title">
+    <h2>{{title}}<slot name="tip"></slot></h2>
   </div>
+  使用插槽
+
+  import 路径+./优先去目录查找，而不加./优先当成插件去node_modules查找
+
+  解决浮动问题
 }
