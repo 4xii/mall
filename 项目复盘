@@ -906,8 +906,7 @@
       }).catch(()=>{
         this.showModal = true;
       })
-    }	
-}
+    }	}
 
 10-1 Order-Header组件{
   style中的scoped可以作用于子作用域 但是会生产很多无用的标签
@@ -920,4 +919,105 @@
   import 路径+./优先去目录查找，而不加./优先当成插件去node_modules查找
 
   解决浮动问题
-}
+
+  组件接收外部变量props
+  props:{
+    title:String
+  }
+
+  在组件cart中
+  <template v-slot:tip>
+    <span>温馨提示：产品是否购买成功，以最终下单为准哦，请尽快结算</span>
+  </template>}
+
+10-2购物车列表渲染{
+  computed:{
+    ...mapState(['username'])
+    //相当于
+    username(){
+      return this.#store.state.username;
+    }
+  }
+  
+  ...mapState是一个辅助的方法，帮助展开username
+
+  购物车List列表
+  getCartList(){
+    this.axios.get('/carts').then((res)=>{
+      this.renderData(res);
+    })
+  }
+
+  // 公共赋值
+  renderData(res){
+    this.list = res.cartProductVoList || [];
+    this.allChecked = res.selectedAll;
+    this.cartTotalPrice = res.cartTotalPrice;
+    this.checkedNum = this.list.filter(item=>item.productSelected).length;
+  }
+
+  选框
+  <span class="checkbox" v-bind:class="{'checked':item.productSelected}"  @click="updateCart(item)"></span>
+
+  过滤
+  this.checkedNum = this.list.filter(item=>item.productSelected).length;}
+
+10-3购物车全选和非全选{
+  // 控制全选功能
+  toggleAll(){
+    let url = this.allChecked?'/carts/unSelectAll':'/carts/selectAll';
+    this.axios.put(url).then((res)=>{
+      this.renderData(res);
+    })
+  }}
+
+10-4购物车更新或删除{
+  updateCart(item,type){
+    let quantity = item.quantity,
+        selected = item.productSelected;
+    if(type == '-'){
+      if(quantity == 1){
+        this.$message.warning('商品至少保留一件');
+        return;
+      }
+      --quantity;
+    }else if(type == '+'){
+      if(quantity > item.productStock){
+        this.$message.warning('购买数量不能超过库存数量');
+        return;
+      }
+      ++quantity;
+    }else{
+      selected = !item.productSelected;
+    }
+    this.axios.put(`/carts/${item.productId}`,{
+      quantity,
+      selected
+    }).then((res)=>{
+      this.renderData(res);
+    })
+  }
+
+  delProduct(item){
+    this.axios.delete(`/carts/${item.productId}`).then((res)=>{
+      this.$message.success('删除成功');
+      this.renderData(res);
+    });}
+
+  购物车都在循环里面，所以可以传参item}
+
+10-5购物车结算{
+  为了安全性，将结算给后台计算
+  order(){
+    let isCheck = this.list.every(item=>!item.productSelected);
+    if(isCheck){
+      this.$message.warning('请选择一件商品');
+    }else{
+      this.$router.push('/order/confirm');
+    }
+  }
+
+  every指的是数组中的每一项   返回的是布尔值
+  var a = [1,4,6,7,9]
+  a.every(item => item>0) //true}
+
