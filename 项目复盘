@@ -1021,3 +1021,74 @@
   var a = [1,4,6,7,9]
   a.every(item => item>0) //true}
 
+11-1ElementUI{
+  h2优先级高于class并且已经有了内置样式
+  多页面适用于搜索引擎
+  页面先加载样式在加载交互
+
+  完整引入
+  import Vue from 'vue';
+  import ElementUI from 'element-ui';
+  import 'element-ui/lib/theme-chalk/index.css';
+  import App from './App.vue';
+
+  Vue.use(ElementUI);
+
+  new Vue({
+    el: '#app',
+    render: h => h(App)
+  });
+
+  按需引入：只引入想要的插件而已，打包的时候还是会打包进来
+  按需加载：只会把个别打包进来 每个页面都import引入 或者 用prototype挂载到vue上
+
+  安装
+  npm i element-ui babel-plugin-component --save-dev
+  引入
+  import { Message } from 'element-ui';
+  import 'element-ui/lib/theme-chalk/index.css'
+  Message.warning(" xxx ")
+
+  prototype挂载
+  Vue.prototype.$message = Message;
+  Vue.use(Message);
+  this.$message.success(" xxx ")}
+
+11-3Babel{
+  Babel是一个javascript编译器
+  使用.babelrc
+  {
+    "presets":xxx,
+    "plugin":xxx
+  }
+  或者babel.config.js
+  module.exports = {
+    "presets":xxx,
+    "plugin":xxx
+  }
+
+  "presets": [
+    '@vue/cli-plugin-babel/preset'
+  ] ,
+  "plugins": [
+    [
+      "component",
+      {
+        "libraryName": "element-ui",
+        "styleLibraryName": "theme-chalk"
+      }
+    ]
+  ]
+  preset > es2015 2016 2017 ...}
+
+11-4退出功能{
+  logout(){
+    this.axios.post('/user/logout').then(()=>{
+      this.$message.success('退出成功');
+      this.$cookie.set('userId','',{expires:'-1'});
+      this.$store.dispatch('saveUserName','');//用户名称
+      this.$store.dispatch('saveCartCount','0');//购物车数量
+    })
+  }
+  cookie set设置 get获取
+}
