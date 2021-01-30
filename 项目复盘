@@ -1091,4 +1091,98 @@
     })
   }
   cookie set设置 get获取
+
+  登录成功需要再获取购物车的数量
+  再次获取
+  getCartCount(){
+      this.axios.get('/carts/products/sum').then((res=0)=>{
+      this.$store.dispatch('saveCartCount',res);
+    })
+  }
+  为了防止资源浪费，在登录页面做参数跳转
+  let params = this.$route.params;
+  if(params && params.from == 'login' ){
+    this.getCartCount();
+  }
+
+  query明文传参用path
+  而params使用name
+  
+  在login中
+  login(){
+    let {username,password} = this;
+    this.axios.post('/user/login',{
+      username,
+      password
+    }).then((res)=>{
+      this.$cookie.set('userId',res.id,{expires:'Session'});
+      //this.$store.dispatch('saveUserName',res.username);
+      this.saveUserName(res.username);
+      this.$router.push({
+        name:'index',
+        params:{
+          from:'login'
+        }
+      });
+    })
+  }
+
+  用户未登录获取用户信息和数量无意义
+  首次未登录
+  在vue.app中
+  mounted(){
+    if(this.$cookie.get('userId')){
+      this.getUser();
+      this.getCartCount()
+    }
+  }
+
+  将expires改成会话版本session
+  this.$cookie.set('userId',res.id,{expires:'Session'});
+  关闭页面其实会话没有消失哟}
+
+12-1 订单父组件{
+  在每个页面都加进去或着配置路由做slot
+
+  <template>
+    <div>
+        <order-header v-bind:title="title">
+          <template v-slot:tip>
+            <span>{{tip}}</span>
+          </template>
+        </order-header>
+        <router-view></router-view>
+        <service-bar></service-bar>
+        <nav-footer></nav-footer>
+    </div>
+  </template>
+
+  在order中
+  mounted(){
+    let path = this.$route.path;
+    if(path == '/order/confirm'){
+      this.title = '订单确认';
+      this.tip = '请认真填写地址'
+    }else if(path = '/order/list'){
+      this.title = '订单xx'
+      this.tip = "请谨防xxx"
+    }else if(xxx){
+
+    }
+  }}
+
+12-2 地址商品数据加载{
+  getCartList(){
+    this.axios.get('/carts').then((res)=>{
+      let list = res.cartProductVoList;//获取购物车中所有的商品数据
+      this.cartTotalPrice = res.cartTotalPrice;//商品总金额
+      this.cartList = list.filter(item=>item.productSelected);//过滤
+      this.cartList.map((item)=>{
+        this.count += item.quantity;
+      })
+    })
+  },
+
+  优化:可是适当用svg替代,减少请求数量
+  cdn 本身是一个加速器，加速前端页面的加载 会永久的缓存
 }
