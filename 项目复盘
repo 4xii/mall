@@ -1454,8 +1454,7 @@
         document.forms[0].submit();
       },100)
     })
-  }
-}
+  }}
 
 13-3 微信支付{
   Native支付
@@ -1520,5 +1519,55 @@
       this.orderDetail = res.orderItemVoList;
       this.payment = res.payment;
     })
-  } 
+  } }
+
+14-1 Order父组件调整{
+  在页面跳转的时候mounted是不会进来的，只有在页面渲染的时候才会，
+  所以当把判断逻辑写在父页面的mounted中，做跳转的时候逻辑会失效，需要刷新
+  为每一个子页面添加
+  <order-header title="订单确认">
+    <template v-slot:tip>
+      <span>请认真填写收货地址</span>
+    </template>
+  </order-header>}
+
+14-2 订单数据渲染{
+  要注意精度丢失
+
+  cdn加速服务器，将图片返回上服务器中
+  已经缓存到服务器中，并且帮助分摊带宽
+
+  <div class="good-state fr" v-if="order.status == 20">
+    <a href="javascript:;">{{order.statusDesc}}</a>
+  </div>
+  <div class="good-state fr" v-else>
+    <a href="javascript:;" @click="goPay(order.orderNo)">{{order.statusDesc}}</a>
+  </div>
+
+  goPay(orderNo){
+    // 三种路由跳转方式
+    // this.$router.push('/order/pay')
+    /*this.$router.push({
+      name:'order-pay',
+      query:{
+        orderNo
+      }
+    })*/
+    this.$router.push({
+      path:'/order/pay',
+      query:{
+        orderNo
+      }
+    })
+  }
+
+  在数据没回来之前做loading
+
+  如果没有数据添加NoData组件
+  <div class="no-data">
+    <img src="/imgs/icon-no-data.png" alt="">
+    <p>当前暂无提交的订单记录</p>
+  </div>
+
+  <no-data v-if="!loading && list.length==0"></no-data>
 }
