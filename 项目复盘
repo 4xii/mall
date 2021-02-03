@@ -1560,8 +1560,29 @@
       }
     })
   }
-
+}
+  
+14-3 Loading和NoData优化{
   在数据没回来之前做loading
+
+  getOrderList(){
+        this.loading = true;
+        this.busy = true;
+        this.axios.get('/orders',{
+          params:{
+            pageSize:10,
+            pageNum:this.pageNum
+          }
+        }).then((res)=>{
+          this.loading = false;
+          this.list = this.list.concat(res.list);
+          this.total = res.total;
+          this.showNextPage = res.hasNextPage;
+          this.busy = false;
+        }).catch(()=>{
+          this.loading = false;
+        })
+      }
 
   如果没有数据添加NoData组件
   <div class="no-data">
@@ -1570,4 +1591,81 @@
   </div>
 
   <no-data v-if="!loading && list.length==0"></no-data>
+}
+
+14-4订单列表分页-分页器{
+  import { Pagination,Button } from 'element-ui'
+  在components中 [Pagination.name]:Pagination,
+
+  <el-pagination
+    v-if="true"
+    class="pagination"
+    background
+    layout="prev, pager, next"
+    :pageSize="pageSize"
+    :total="total"
+    @current-change="handleChange"
+    >
+  </el-pagination>
+
+  通过动态的绑定pageSize记得在data写上pageSize哟
+  绑定自定义事件current-change
+  handleChange(pageNum){
+    this.pageNum = pageNum;
+    this.getOrderList();
+  }
+  每次点击都会获得页数，然后用axios获取对应页的列表，然后渲染
+}
+
+14-5 订单列表分页-加载更多{
+  <div class="load-more" v-if="false">
+      <el-button type="primary" :loading="loading" @click="loadMore">加载更多</el-button>
+  </div>
+  在每次请求前做this.loading = true;
+  loadMore(){
+    this.pageNum++;
+    this.getOrderList();
+  }
+  在获取数据数组的时候和上一条进行concat累加
+  this.list = this.list.concat(res.list);
+}
+
+14-6订单列表分页-滚动加载{
+  vue-infinite-scroll
+  import infiniteScroll from 'vue-infinite-scroll'
+
+  <div class="scroll-more"
+    v-infinite-scroll="scrollMore"//方法
+    infinite-scroll-disabled="true"
+    infinite-scroll-distance="410"//距离底部多少开始滚动
+    v-if="false"
+  >
+    <img src="/imgs/loading-svg/loading-spinning-bubbles.svg" alt="" v-show="loading">
+  </div>
+
+  scrollMore(){
+    this.busy = true;
+    setTimeout(()=>{
+      this.pageNum++;
+      this.getList();
+    },500);
+  }
+
+  getList(){
+    this.loading = true;
+    this.axios.get('/orders',{
+      params:{
+        pageSize:10,
+        pageNum:this.pageNum
+      }
+    }).then((res)=>{
+      this.list = this.list.concat(res.list);
+      this.loading = false;
+      if(res.hasNextPage){//判断是否还有下一页
+        this.busy=false;
+      }else{
+        this.busy=true;
+      }
+    });
+  }
 }
